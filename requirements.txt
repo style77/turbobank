@@ -1,0 +1,8 @@
+async-timeout==4.0.3
+asyncpg==0.29.0
+click==8.1.7
+Faker==25.9.2
+numpy==2.0.0
+psycopg2-binary==2.9.9
+python-dateutil==2.9.0.post0
+six==1.16.0
