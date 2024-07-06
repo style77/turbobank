@@ -1,11 +1,13 @@
 from dataclasses import dataclass
+from datetime import date, datetime
+import os
 import random
 import typing
-import sqlite3
-from datetime import date
-
+import psycopg2
+from psycopg2 import sql
 import numpy as np
 
+database = os.environ.get("POSTGRES_CONN_ID")
 
 @dataclass
 class Account:
@@ -17,10 +19,10 @@ class Account:
 
 
 def setup_db():
-    with open('bank/schema.sql', 'r') as schema_file:
-        conn = sqlite3.connect('turbobank.db')
+    with open("bank/schema.sql", "r") as schema_file:
+        conn = psycopg2.connect(database)
         cursor = conn.cursor()
-        cursor.executescript(schema_file.read())
+        cursor.execute(schema_file.read())
         conn.commit()
         cursor.close()
         conn.close()
@@ -37,13 +39,14 @@ def create_customer(
     phone: str,
     email: str,
 ):
-    conn = sqlite3.connect('turbobank.db')
+    conn = psycopg2.connect(database)
     cursor = conn.cursor()
 
     cursor.execute(
         """
         INSERT INTO customers (first_name, last_name, date_of_birth, address, city, state, zip_code, phone, email)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id
         """,
         (
             first_name,
@@ -57,57 +60,62 @@ def create_customer(
             email,
         ),
     )
-    
-    customer_id = cursor.lastrowid
+
+    customer_id = cursor.fetchone()[0]
 
     cursor.close()  # Close the cursor before committing
-    conn.commit()   # Commit after cursor is closed
+    conn.commit()  # Commit after cursor is closed
     conn.close()
 
     return customer_id
 
+
 def generate_account_balance(lambda_param=0.1, max_balance=10000):
-    balance = np.random.exponential(scale=1/lambda_param)
+    balance = np.random.exponential(scale=1 / lambda_param)
     return min(balance, max_balance)
 
-def create_account(customer_id: int, account_type: typing.Literal["Checking", "Savings", "Credit"]):
+
+def create_account(
+    customer_id: int, account_type: typing.Literal["Checking", "Savings", "Credit"]
+):
     # 20 characters acc number
     account_number = "".join(str(random.randint(0, 9)) for _ in range(20))
 
     # random balance with higher probability of lower values
     balance = generate_account_balance()
 
-    conn = sqlite3.connect('turbobank.db')
+    conn = psycopg2.connect(database)
     cursor = conn.cursor()
 
     cursor.execute(
         """
         INSERT INTO accounts (account_number, customer_id, account_type, balance)
-        VALUES (?, ?, ?, ?)
+        VALUES (%s, %s, %s, %s)
+        RETURNING id
         """,
         (account_number, customer_id, account_type, balance),
     )
-    
-    account_id = cursor.lastrowid
+
+    account_id = cursor.fetchone()[0]
 
     cursor.execute(
         """
-        SELECT id, account_number, customer_id, account_type, balance FROM accounts WHERE id = ?
+        SELECT id, account_number, customer_id, account_type, balance FROM accounts WHERE id = %s
         """,
-        (account_id,)
+        (account_id,),
     )
 
     account = cursor.fetchone()
 
     cursor.close()  # Close the cursor before committing
-    conn.commit()   # Commit after cursor is closed
+    conn.commit()  # Commit after cursor is closed
     conn.close()
 
     return Account(*account)
-    
+
 
 def get_accounts():
-    conn = sqlite3.connect('turbobank.db')
+    conn = psycopg2.connect(database)
     cursor = conn.cursor()
 
     cursor.execute(
@@ -122,3 +130,48 @@ def get_accounts():
     conn.close()
 
     return [Account(*account) for account in accounts]
+
+
+def update_account_balance(account_id: int, new_balance: float, add: bool = False):
+    conn = psycopg2.connect(database)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        (
+            """
+        UPDATE accounts SET balance = %s WHERE id = %s
+        """
+            if not sum
+            else """
+        UPDATE accounts SET balance = balance + %s WHERE id = %s
+        """
+        ),
+        (new_balance, account_id),
+    )
+
+    cursor.close()
+    conn.commit()
+    conn.close()
+
+
+def create_transaction(
+    account_id: int,
+    transaction_type: str,
+    amount: float,
+    created_at: datetime,
+    description: str,
+):
+    conn = psycopg2.connect(database)
+    cursor = conn.cursor()
+
+    cursor.execute(
+        """
+        INSERT INTO transactions (account_id, transaction_type, amount, created_at, description)
+        VALUES (%s, %s, %s, %s, %s)
+        """,
+        (account_id, transaction_type, amount, created_at, description),
+    )
+
+    cursor.close()
+    conn.commit()
+    conn.close()
