@@ -21,7 +21,7 @@ MAX_TRANSFER = 10000
 
 
 @dag(start_date=datetime(2024, 1, 1), schedule_interval="@hourly", catchup=False)
-def run_turbobank_pipeline():
+def turbobank_pipeline():
     simulate_day = PythonOperator(
         task_id="simulate_transactions",
         python_callable=lambda: simulate_one_day(
@@ -42,4 +42,4 @@ def run_turbobank_pipeline():
     simulate_day >> transform_data
 
 
-run_turbobank_pipeline()
+turbobank_pipeline()
