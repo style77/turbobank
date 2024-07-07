@@ -13,5 +13,10 @@ USER astro
 
 ENV POSTGRES_CONNECTOR=postgres://postgres:postgres@127.0.0.1:5432/public
 ENV POSTGRES_CONN_ID=postgres://postgres:postgres@127.0.0.1:5432/turbobank
+
 ENV DBT_PROJECT_DIR=/usr/local/airflow/dbt/turbobank
+ENV DBT_PROFILES_PATH=/usr/local/airflow/dbt/.dbt/profiles.yml
+ENV DBT_PROFILE_NAME=turbobank
+ENV DBT_TARGET=prod
+
 ENV DBT_DOCS_PATH=/usr/local/airflow/dbt-docs
