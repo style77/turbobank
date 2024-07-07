@@ -1,0 +1,178 @@
+
+version: 2
+
+models:
+  - name: dim_customer
+    description: "Customer model with basic informations"
+    columns:
+      - name: customer_id
+        description: "Unique identifier of the customer"
+        data_tests:
+          - unique
+          - not_null
+      - name: address_id
+        description: "Unique identifier of the address"
+        data_tests:
+          - unique
+          - not_null
+      - name: first_name
+        description: "First name of the customer"
+        data_tests:
+          - not_null
+      - name: last_name
+        description: "Last name of the customer"
+        data_tests:
+          - not_null
+      - name: date_of_birth
+        description: "Date of birth of the customer"
+        data_type: date
+        data_tests:
+          - not_null
+      - name: phone
+        description: "Phone number of the customer"
+        data_type: string
+        data_tests:
+          - not_null
+          - is_phone_number
+      - name: email
+        description: "Email address of the customer"
+        data_type: string
+        data_tests:
+          - not_null
+          - is_email_address
+
+  - name: dim_customer_address
+    description: "Customer address model"
+    columns:
+      - name: address_id
+        description: "Unique identifier of the address"
+        data_tests:
+          - unique
+          - not_null
+      - name: address
+        description: "Address of the customer"
+        data_tests:
+          - not_null
+      - name: city
+        description: "City of the customer"
+        data_tests:
+          - not_null
+      - name: state
+        description: "State of the customer"
+        data_tests:
+          - not_null
+      - name: zip_code
+        description: "Zip code of the customer"
+        data_tests:
+          - not_null
+
+  - name: dim_account
+    description: "Account model with basic informations"
+    columns:
+      - name: account_id
+        description: "Unique identifier of the account"
+        data_tests:
+          - unique
+          - not_null
+      - name: account_number
+        description: "Number of the account"
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Unique identifier of the customer"
+        data_tests:
+          - unique
+          - not_null
+      - name: account_type
+        description: "Type of the account"
+        data_tests:
+          - not_null
+      - name: balance
+        description: "Balance of the account"
+        data_type: float
+        data_tests:
+          - not_null
+
+  - name: dim_transaction_type
+    description: "Transaction type model"
+    columns:
+      - name: transaction_type_id
+        description: "Unique identifier of the transaction type"
+        data_tests:
+          - unique
+          - not_null
+      - name: transaction_type
+        description: "Type of the transaction"
+        data_tests:
+          - not_null
+          - accepted_values:
+              values: ["Deposit", "Withdrawal", "Transfer", "Payment"]
+  
+  - name: dim_transaction_description
+    description: "Transaction description model"
+    columns:
+      - name: transaction_description_id
+        description: "Unique identifier of the transaction description"
+        data_tests:
+          - unique
+          - not_null
+      - name: transaction_description
+        description: "Description of the transaction"
+        data_tests:
+          - not_null
+  
+  - name: fact_account
+    description: "Account fact model"
+    columns:
+      - name: account_id
+        description: "Unique identifier of the account"
+        data_tests:
+          - unique
+          - not_null
+      - name: customer_id
+        description: "Unique identifier of the customer"
+        data_tests:
+          - unique
+          - not_null
+      - name: balance
+        description: "Balance of the account"
+        data_type: float
+        data_tests:
+          - not_null
+      - name: created_at
+        description: "Date of the account creation"
+        data_type: date
+        data_tests:
+          - not_null
+          
+  - name: fact_transaction
+    description: "Transaction fact model"
+    columns:
+      - name: transaction_id
+        description: "Unique identifier of the transaction"
+        data_tests:
+          - unique
+          - not_null
+      - name: account_id
+        description: "Unique identifier of the account"
+        data_tests:
+          - not_null
+      - name: transaction_type_id
+        description: "Unique identifier of the transaction type"
+        data_tests:
+          - not_null
+      - name: transaction_description_id
+        description: "Unique identifier of the transaction description"
+        data_tests:
+          - not_null
+      - name: amount
+        description: "Amount of the transaction"
+        data_type: float
+        data_tests:
+          - not_null
+      - name: created_at
+        description: "Date of the transaction"
+        data_type: date
+        data_tests:
+          - not_null
