@@ -1,0 +1,21 @@
+turbobank:
+  outputs:
+    dev:
+      dbname: turbobank
+      host: 127.0.0.1
+      pass: postgres
+      port: 5432
+      schema: public
+      threads: 1
+      type: postgres
+      user: postgres
+    prod:
+      dbname: turbobank
+      host: postgres  # Docker container
+      pass: postgres
+      port: 5432
+      schema: public
+      threads: 1
+      type: postgres
+      user: postgres
+  target: dev
