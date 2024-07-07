@@ -4,10 +4,25 @@ import os
 import random
 import typing
 import psycopg2
-from psycopg2 import sql
 import numpy as np
 
-database = os.environ.get("POSTGRES_CONN_ID")
+def check_connection(database: str):
+    try:
+        conn = psycopg2.connect(database)
+        conn.close()
+        return True
+    except psycopg2.OperationalError:
+        return False
+
+def get_connection():
+    database = os.environ.get("POSTGRES_CONN_ID")
+    if check_connection(database):
+        return psycopg2.connect(database)
+    
+    hook = "postgres://postgres:postgres@postgres:5432/turbobank"
+    if not check_connection(hook):
+        raise Exception("Could not connect to the database.")
+    return psycopg2.connect(hook)
 
 @dataclass
 class Account:
@@ -20,7 +35,7 @@ class Account:
 
 def setup_db():
     with open("bank/schema.sql", "r") as schema_file:
-        conn = psycopg2.connect(database)
+        conn = get_connection()
         cursor = conn.cursor()
         cursor.execute(schema_file.read())
         conn.commit()
@@ -39,7 +54,7 @@ def create_customer(
     phone: str,
     email: str,
 ):
-    conn = psycopg2.connect(database)
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
@@ -84,7 +99,7 @@ def create_account(
     # random balance with higher probability of lower values
     balance = generate_account_balance()
 
-    conn = psycopg2.connect(database)
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
@@ -115,7 +130,7 @@ def create_account(
 
 
 def get_accounts():
-    conn = psycopg2.connect(database)
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
@@ -133,7 +148,7 @@ def get_accounts():
 
 
 def update_account_balance(account_id: int, new_balance: float, add: bool = False):
-    conn = psycopg2.connect(database)
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
@@ -161,7 +176,7 @@ def create_transaction(
     created_at: datetime,
     description: str,
 ):
-    conn = psycopg2.connect(database)
+    conn = get_connection()
     cursor = conn.cursor()
 
     cursor.execute(
