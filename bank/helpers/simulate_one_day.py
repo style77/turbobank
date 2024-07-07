@@ -9,5 +9,5 @@ def simulate_one_day(
 ):
     accounts = get_accounts()
     simulate_transactions(
-        accounts, transaction_fee, internal_transaction_fee, max_transfer, 0.01, 0
+        accounts, transaction_fee, internal_transaction_fee, max_transfer, None, 0
     )

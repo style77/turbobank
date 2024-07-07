@@ -8,7 +8,7 @@ from bank.accounts.manage import Account, update_account_balance, create_transac
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
-def simulate_transactions(accounts: typing.List[Account], transaction_fee: float, internal_transaction_fee: float, max_transfer: float, day_time: int, day: int):
+def simulate_transactions(accounts: typing.List[Account], transaction_fee: float, internal_transaction_fee: float, max_transfer: float, day_time: int | None, day: int):
     transactions_to_perform = random.randint(1, len(accounts) // 5)
     logging.info(f"Simulating {transactions_to_perform} transactions.")
 
@@ -63,9 +63,14 @@ def simulate_transactions(accounts: typing.List[Account], transaction_fee: float
         
         account.balance = new_balance
 
+        if day_time is None:
+            continue
+
         if i < transactions_to_perform - 1:
             remaining_time = day_time - total_time_elapsed
             max_sleep_time = remaining_time / (transactions_to_perform - i)
             sleep_time = random.uniform(0.01, max_sleep_time)
             total_time_elapsed += sleep_time
-            time.sleep(sleep_time)
+
+            if sleep_time > 0:
+                time.sleep(sleep_time)
