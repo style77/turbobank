@@ -1,0 +1,10 @@
+version: 2
+
+sources:
+  - database: turbobank
+    name: raw_source
+    schema: public
+    tables:
+      - name: customers
+      - name: accounts
+      - name: transactions
