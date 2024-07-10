@@ -1,11 +1,15 @@
 {{ config(materialized='table', unique_key='transaction_id') }}
 
-select
-    id as transaction_id,
-    transaction_type
-from (
-    select distinct
+WITH transactions AS (
+    SELECT
         id as transaction_id,
         transaction_type
-    from {{ source('raw_source', 'transactions') }}
-) distinct_transactions
+    FROM {{ source('raw_source', 'transactions') }}
+),
+
+SELECT
+    t.transaction_id,
+    tt.id as transaction_type_id
+FROM transactions t
+LEFT JOIN {{ ref('transaction_types') }} tt
+ON t.transaction_type = tt.transaction_type

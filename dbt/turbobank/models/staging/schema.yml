@@ -98,12 +98,10 @@ models:
         data_tests:
           - unique
           - not_null
-      - name: transaction_type
+      - name: transaction_type_id
         description: "Type of the transaction"
         data_tests:
           - not_null
-          - accepted_values:
-              values: ["Deposit", "Withdrawal", "Transfer", "Payment"]
 
   - name: fact_transaction
     description: "Transaction fact model"
