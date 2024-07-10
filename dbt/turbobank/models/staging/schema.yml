@@ -40,15 +40,6 @@ models:
         data_tests:
           - not_null
           - is_email_address
-
-  - name: dim_customer_address
-    description: "Customer address model"
-    columns:
-      - name: address_id
-        description: "Unique identifier of the address"
-        data_tests:
-          - unique
-          - not_null
       - name: address
         description: "Address of the customer"
         data_tests:
@@ -93,12 +84,17 @@ models:
         data_type: float
         data_tests:
           - not_null
+      - name: created_at
+        description: "Date of the account creation"
+        data_type: date
+        data_tests:
+          - not_null
 
-  - name: dim_transaction_type
+  - name: dim_transaction
     description: "Transaction type model"
     columns:
-      - name: transaction_type_id
-        description: "Unique identifier of the transaction type"
+      - name: transaction_id
+        description: "Unique identifier of the transaction"
         data_tests:
           - unique
           - not_null
@@ -108,44 +104,7 @@ models:
           - not_null
           - accepted_values:
               values: ["Deposit", "Withdrawal", "Transfer", "Payment"]
-  
-  - name: dim_transaction_description
-    description: "Transaction description model"
-    columns:
-      - name: transaction_description_id
-        description: "Unique identifier of the transaction description"
-        data_tests:
-          - unique
-          - not_null
-      - name: transaction_description
-        description: "Description of the transaction"
-        data_tests:
-          - not_null
-  
-  - name: fact_account
-    description: "Account fact model"
-    columns:
-      - name: account_id
-        description: "Unique identifier of the account"
-        data_tests:
-          - unique
-          - not_null
-      - name: customer_id
-        description: "Unique identifier of the customer"
-        data_tests:
-          - unique
-          - not_null
-      - name: balance
-        description: "Balance of the account"
-        data_type: float
-        data_tests:
-          - not_null
-      - name: created_at
-        description: "Date of the account creation"
-        data_type: date
-        data_tests:
-          - not_null
-          
+
   - name: fact_transaction
     description: "Transaction fact model"
     columns:
@@ -158,12 +117,8 @@ models:
         description: "Unique identifier of the account"
         data_tests:
           - not_null
-      - name: transaction_type_id
-        description: "Unique identifier of the transaction type"
-        data_tests:
-          - not_null
-      - name: transaction_description_id
-        description: "Unique identifier of the transaction description"
+      - name: transaction_meta_id
+        description: "Unique identifier of the transaction meta dim"
         data_tests:
           - not_null
       - name: amount
