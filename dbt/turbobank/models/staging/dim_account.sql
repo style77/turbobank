@@ -5,5 +5,6 @@ select
     account_number,
     customer_id,
     account_type,
-    balance
+    balance,
+    created_at::date as created_at
 from {{ source('raw_source', 'accounts') }}

@@ -5,7 +5,7 @@ WITH transactions AS (
         id as transaction_id,
         transaction_type
     FROM {{ source('raw_source', 'transactions') }}
-),
+)
 
 SELECT
     t.transaction_id,

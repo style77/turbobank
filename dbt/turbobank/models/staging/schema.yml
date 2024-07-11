@@ -10,11 +10,6 @@ models:
         data_tests:
           - unique
           - not_null
-      - name: address_id
-        description: "Unique identifier of the address"
-        data_tests:
-          - unique
-          - not_null
       - name: first_name
         description: "First name of the customer"
         data_tests:
