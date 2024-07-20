@@ -1,0 +1,39 @@
+
+version: 2
+
+models:
+  - name: rep_customers_transactions
+    description: "Customer transactions report"
+    columns:
+      - name: transaction_id
+        description: "Unique identifier of the transaction"
+        data_tests:
+        - unique
+          - not_null
+      - name: transaction_date
+        description: "Date of the transaction"
+        data_type: date
+        data_tests:
+          - not_null
+      - name: transaction_amount
+        description: "Amount of the transaction"
+        data_type: float
+        data_tests:
+          - not_null
+      - name: transaction_type
+        description: "Type of the transaction"
+        data_tests:
+          - not_null
+      - name: customer_id
+        description: "Unique identifier of the customer"
+        data_tests:
+          - not_null
+      - name: customer_name
+        # RODO ISSUES FOR A REAL WORLD - customer_name is a PII
+        description: "Full name of the customer"
+        data_tests:
+          - not_null
+      - name: account_id
+        description: "Unique identifier of the account"
+        data_tests:
+          - not_null
